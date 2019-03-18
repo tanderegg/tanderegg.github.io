@@ -5,28 +5,28 @@ title: Building a Platformer on Amethyst - Part 1
 
 # Introduction
 
-Like many developers, I got my start out of an interest in game development.  I first began to understand what goes into making a game during a computer class where we used the [Logo](https://en.wikipedia.org/wiki/Logo_(programming_language)) language, and from there began to try to make my own Zelda-like game.
+Like many coders, I got my start via video games.  I first began to understand what goes into making a game during a computer class where we used the [Logo](https://en.wikipedia.org/wiki/Logo_(programming_language)) language, and from there began to try to make my own Zelda-like game.
 
-Fast forward a few decades, and I'm now a professional developer, but not in the game industry.  I've kept up my interest in game programming partly for fun, but also as a way to motivate me to learn new technologies and languages.  As such, I've never really made a full game, but I've developed a number of game engines first using C, then C++, and more recently Rust.
+Fast forward a few decades, and I'm now a professional software engineer, but not in the game industry.  I've kept up my interest in game programming partly for fun, but also as a way to motivate me to learn new technologies and languages.  As such, I've never really made a full game, but I've developed a number of game engines first using C, then C++, and more recently Rust.
 
-Rust, for those who aren't familiar, is a new programming language designed from the ground up to address some of the major deficencies in languages like C/C++, namely memory safety.  This turns out to be a very important aspect of game programming, as games tend to tax a computer more than any other type of software, and attempt to eek as much efficiency as possible from a computer's RAM and CPU cycles.  This leads to fairly low-level programming and memory management, which in turn increases the risk of memory corruption, stack overflows, and null pointer exceptions.
+Rust, for those who aren't familiar, is a relatively new programming language designed from the ground up to address some of the major deficencies in languages like C/C++, namely memory safety.  This turns out to be a very important aspect of game programming, as games tend to tax a computer more than any other type of software, and attempt to eek as much efficiency as possible from a computer's memory and CPU cycles.  This leads to fairly low-level programming and memory management, which in turn increases the risk of data corruption, memory leaks, and null pointer exceptions.
 
-Rust aims to be just as performant as C/C++, but with memory safety baked in to the compiler, you can experiment and "fail fast" while developing without fear of hidden bugs wreaking havoc later.  Well, that's the theory at most, let's see how it goes!
+Rust aims to be just as performant as C/C++, but with memory safety baked in to the compiler, you can experiment and use the compiler to guid you while developing without fear of hidden bugs wreaking havoc later.  Well, that's the theory at least, let's see how it goes!
 
 # Amethyst and Rust for game development
 
-[Amethyst](https://amethyst.rs) is a game development framework written in Rust that is based on the Enitity, Component, and Systems (ECS) model of game development.  For more background on that, check out [@kyren's closing keynote for Rustconf 2018](https://kyren.github.io/2018/09/14/rustconf-talk.html).  Her experience is much like mine has been, trying to work with C++ OOM models for game development.  ECS and Rust go hand and hand, and since I've spent a fair amount of time writing (and-rewriting) game engines, and less so actual games, I thought I start with Amethyst and work directly on developing a game within that framework.
+[Amethyst](https://amethyst.rs) is a game development framework written in Rust that is based on the Enitity, Component, and Systems (ECS) model of game development.  For more background on that, check out [@kyren's closing keynote for Rustconf 2018](https://kyren.github.io/2018/09/14/rustconf-talk.html).  Her experience is much like mine has been: struggling with using C++ object oriented models for game development which quickly collapse under their own weight.  ECS and Rust go hand and hand, as both reject the OO model, and since I've spent a fair amount of time writing (and-rewriting) game engines, and less so actual games, I thought I start with Amethyst and work directly on developing a game within that framework instead of starting from scratch once again.
 
 # Part 1: Drawing things
 
 ## Amethyst bootstrap and folder structure
 
-To get started, first install Rust using [Rustup](https://rustup.rs/) if you haven't already.  Then, install Amethyst's CLI tools with cargo: `cargo install amethyst-tools`.  Finally, type `amethyst new quartz-knight` to create a new folder called "quartz-knight" with a few skeleton files in it.
+To get started, first install Rust using [Rustup](https://rustup.rs/) if you haven't already.  Then, install Amethyst's CLI tools with cargo: `cargo install amethyst-tools`.  Finally, type `amethyst new quartz_knight` to create a new folder called `quartz_knight` with a few skeleton files in it.  Why Quartz Knight?  Well, Amethyst is a type of quartz, and Amethyst Knight doesn't quite roll off the tongue.
 
 The folder structure should look like this:
 
 ```
-quartz-knight ->
+quartz_knight ->
   resources ->
     display_config.ron
   src ->
@@ -38,7 +38,7 @@ At this point, you should be able to run your game already, first `cd quartz-kni
 
 ## Set the stage with a background image
 
-OK, let's start filling in that blank screen.  First, let's pretend we are targeting a 720p resolution (say, Nintendo Switch in hand-held mode), and update `display_config.ron` like so:
+OK, let's start filling in that blank screen.  First, let's say we are targeting a 720p resolution (say, Nintendo Switch in hand-held mode), and update `display_config.ron` like so:
 
 ```
 (
@@ -57,7 +57,7 @@ This will make the window title look nicer, and set the window size to 1280x720.
 
 Next, create a new folder called `assets` in your project root, then download [this file](https://github.com/tanderegg/amethyst-platformer/blob/part_1/quartz_knight/assets/background.png) to it.  That will be our background image to get started with.
 
-To load it, we need to start writing some code.  First, let's rename the default game state struct to something better than `Example`, and add some startup code to the impl:
+To load it, we need to start writing some code.  First, let's rename the default game state struct to something better than `Example`, and add some startup code to the impl.  I chose PlayState as the name, as this struct represents the state of the game while the player is actually playing, as opposed to a LoadingState or OptionsMenuState, etc.
 
 ```
 struct PlayState;
